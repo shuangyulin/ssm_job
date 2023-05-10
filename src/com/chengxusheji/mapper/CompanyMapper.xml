@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.CompanyMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加企业记录 -->
+	<insert id="addCompany" parameterType="company">
+		insert into t_company(companyUserName,password,qyjb,companyName,gszch,yyzz,gsxz,gsgm,gghy,lxr,lxdh,companyDesc,address,shzt) values 
+		(#{companyUserName},#{password},#{qyjb},#{companyName},#{gszch},#{yyzz},#{gsxz},#{gsgm},#{gghy},#{lxr},#{lxdh},#{companyDesc},#{address},#{shzt})
+	</insert>
+
+	<!-- 按照查询条件分页查询企业记录 -->
+	<select id="queryCompany" resultMap="companyMap" >
+		select t_company.* from t_company ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="companyMap" type="company">
+        <id property="companyUserName" column="companyUserName" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有企业记录 -->
+	<select id="queryCompanyList" resultMap="companyMap" >
+		select t_company.* from t_company ${where}
+	</select>
+
+    <!-- 按照查询条件的企业记录数 -->
+	<select id="queryCompanyCount" resultType="int">
+		select count(*) from t_company ${where}
+	</select>
+
+	<!-- 根据主键查询某个企业记录 -->
+	<select id="getCompany" parameterType="string" resultMap="companyMap">
+		select * from t_company where t_company.companyUserName = #{companyUserName}
+	</select>
+
+	<!-- 更新企业记录 -->
+	<update id="updateCompany" parameterType="company">
+		update t_company set password=#{password},qyjb=#{qyjb},companyName=#{companyName},gszch=#{gszch},yyzz=#{yyzz},gsxz=#{gsxz},gsgm=#{gsgm},gghy=#{gghy},lxr=#{lxr},lxdh=#{lxdh},companyDesc=#{companyDesc},address=#{address},shzt=#{shzt} where companyUserName = #{companyUserName}
+	</update>
+
+	<!-- 删除企业记录 -->
+	<delete id="deleteCompany" parameterType="string">
+		delete from t_company where companyUserName=#{companyUserName}
+	</delete>
+
+</mapper>

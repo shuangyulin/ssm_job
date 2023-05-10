@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.JobRecordMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加兼职记录记录 -->
+	<insert id="addJobRecord" parameterType="jobRecord">
+		insert into t_jobRecord(title,content,userObj,recordDate) values 
+		(#{title},#{content},#{userObj.user_name},#{recordDate})
+	</insert>
+
+	<!-- 按照查询条件分页查询兼职记录记录 -->
+	<select id="queryJobRecord" resultMap="jobRecordMap" >
+		select t_jobRecord.* from t_jobRecord,t_userInfo ${where} and t_jobRecord.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="jobRecordMap" type="jobRecord">
+        <id property="recordId" column="recordId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有兼职记录记录 -->
+	<select id="queryJobRecordList" resultMap="jobRecordMap" >
+		select t_jobRecord.* from t_jobRecord,t_userInfo ${where} and t_jobRecord.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的兼职记录记录数 -->
+	<select id="queryJobRecordCount" resultType="int">
+		select count(*) from t_jobRecord,t_userInfo ${where} and t_jobRecord.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个兼职记录记录 -->
+	<select id="getJobRecord" parameterType="int" resultMap="jobRecordMap">
+		select * from t_jobRecord where t_jobRecord.recordId = #{recordId}
+	</select>
+
+	<!-- 更新兼职记录记录 -->
+	<update id="updateJobRecord" parameterType="jobRecord">
+		update t_jobRecord set title=#{title},content=#{content},userObj=#{userObj.user_name},recordDate=#{recordDate} where recordId = #{recordId}
+	</update>
+
+	<!-- 删除兼职记录记录 -->
+	<delete id="deleteJobRecord" parameterType="int">
+		delete from t_jobRecord where recordId=#{recordId}
+	</delete>
+
+</mapper>

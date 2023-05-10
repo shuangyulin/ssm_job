@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.DeliveryMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加简历投递记录 -->
+	<insert id="addDelivery" parameterType="delivery">
+		insert into t_delivery(jobObj,userObj,deliveryTime,handleTime,clzt,tzxx,gzpj) values 
+		(#{jobObj.jobId},#{userObj.user_name},#{deliveryTime},#{handleTime},#{clzt},#{tzxx},#{gzpj})
+	</insert>
+
+	<!-- 按照查询条件分页查询简历投递记录 -->
+	<select id="queryDelivery" resultMap="deliveryMap" >
+		select t_delivery.* from t_delivery,t_job,t_userInfo ${where} and t_delivery.jobObj = t_job.jobId and t_delivery.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="deliveryMap" type="delivery">
+        <id property="deliveryId" column="deliveryId" />
+        <association property="jobObj" column="jobObj" select="com.chengxusheji.mapper.JobMapper.getJob" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有简历投递记录 -->
+	<select id="queryDeliveryList" resultMap="deliveryMap" >
+		select t_delivery.* from t_delivery,t_job,t_userInfo ${where} and t_delivery.jobObj = t_job.jobId and t_delivery.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的简历投递记录数 -->
+	<select id="queryDeliveryCount" resultType="int">
+		select count(*) from t_delivery,t_job,t_userInfo ${where} and t_delivery.jobObj = t_job.jobId and t_delivery.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个简历投递记录 -->
+	<select id="getDelivery" parameterType="int" resultMap="deliveryMap">
+		select * from t_delivery where t_delivery.deliveryId = #{deliveryId}
+	</select>
+
+	<!-- 更新简历投递记录 -->
+	<update id="updateDelivery" parameterType="delivery">
+		update t_delivery set jobObj=#{jobObj.jobId},userObj=#{userObj.user_name},deliveryTime=#{deliveryTime},handleTime=#{handleTime},clzt=#{clzt},tzxx=#{tzxx},gzpj=#{gzpj} where deliveryId = #{deliveryId}
+	</update>
+
+	<!-- 删除简历投递记录 -->
+	<delete id="deleteDelivery" parameterType="int">
+		delete from t_delivery where deliveryId=#{deliveryId}
+	</delete>
+
+</mapper>

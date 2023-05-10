@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.JobTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加职位类别记录 -->
+	<insert id="addJobType" parameterType="jobType">
+		insert into t_jobType(jobTypeName,jobTypeDesc) values 
+		(#{jobTypeName},#{jobTypeDesc})
+	</insert>
+
+	<!-- 按照查询条件分页查询职位类别记录 -->
+	<select id="queryJobType" resultMap="jobTypeMap" >
+		select t_jobType.* from t_jobType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="jobTypeMap" type="jobType">
+        <id property="jobTypeId" column="jobTypeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有职位类别记录 -->
+	<select id="queryJobTypeList" resultMap="jobTypeMap" >
+		select t_jobType.* from t_jobType ${where}
+	</select>
+
+    <!-- 按照查询条件的职位类别记录数 -->
+	<select id="queryJobTypeCount" resultType="int">
+		select count(*) from t_jobType ${where}
+	</select>
+
+	<!-- 根据主键查询某个职位类别记录 -->
+	<select id="getJobType" parameterType="int" resultMap="jobTypeMap">
+		select * from t_jobType where t_jobType.jobTypeId = #{jobTypeId}
+	</select>
+
+	<!-- 更新职位类别记录 -->
+	<update id="updateJobType" parameterType="jobType">
+		update t_jobType set jobTypeName=#{jobTypeName},jobTypeDesc=#{jobTypeDesc} where jobTypeId = #{jobTypeId}
+	</update>
+
+	<!-- 删除职位类别记录 -->
+	<delete id="deleteJobType" parameterType="int">
+		delete from t_jobType where jobTypeId=#{jobTypeId}
+	</delete>
+
+</mapper>

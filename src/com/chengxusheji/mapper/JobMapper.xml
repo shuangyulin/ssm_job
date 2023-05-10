@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.JobMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加职位记录 -->
+	<insert id="addJob" parameterType="job">
+		insert into t_job(jobTypeObj,jobName,jobDesc,salary,zprs,xlyq,yxqx,gzqy,gzdz,viewNum,companyObj,addTime) values 
+		(#{jobTypeObj.jobTypeId},#{jobName},#{jobDesc},#{salary},#{zprs},#{xlyq},#{yxqx},#{gzqy},#{gzdz},#{viewNum},#{companyObj.companyUserName},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询职位记录 -->
+	<select id="queryJob" resultMap="jobMap" >
+		select t_job.* from t_job,t_company,t_jobType ${where} and t_job.jobTypeObj = t_jobType.jobTypeId and t_job.companyObj = t_company.companyUserName limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="jobMap" type="job">
+        <id property="jobId" column="jobId" />
+        <association property="jobTypeObj" column="jobTypeObj" select="com.chengxusheji.mapper.JobTypeMapper.getJobType" />
+        <association property="companyObj" column="companyObj" select="com.chengxusheji.mapper.CompanyMapper.getCompany" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有职位记录 -->
+	<select id="queryJobList" resultMap="jobMap" >
+		select t_job.* from t_job,t_company,t_jobType ${where} and t_job.jobTypeObj = t_jobType.jobTypeId and t_job.companyObj = t_company.companyUserName
+	</select>
+
+    <!-- 按照查询条件的职位记录数 -->
+	<select id="queryJobCount" resultType="int">
+		select count(*) from t_job,t_company,t_jobType ${where} and t_job.jobTypeObj = t_jobType.jobTypeId and t_job.companyObj = t_company.companyUserName
+	</select>
+
+	<!-- 根据主键查询某个职位记录 -->
+	<select id="getJob" parameterType="int" resultMap="jobMap">
+		select * from t_job where t_job.jobId = #{jobId}
+	</select>
+
+	<!-- 更新职位记录 -->
+	<update id="updateJob" parameterType="job">
+		update t_job set jobTypeObj=#{jobTypeObj.jobTypeId},jobName=#{jobName},jobDesc=#{jobDesc},salary=#{salary},zprs=#{zprs},xlyq=#{xlyq},yxqx=#{yxqx},gzqy=#{gzqy},gzdz=#{gzdz},viewNum=#{viewNum},companyObj=#{companyObj.companyUserName},addTime=#{addTime} where jobId = #{jobId}
+	</update>
+
+	<!-- 删除职位记录 -->
+	<delete id="deleteJob" parameterType="int">
+		delete from t_job where jobId=#{jobId}
+	</delete>
+
+</mapper>
